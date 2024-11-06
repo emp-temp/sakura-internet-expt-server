@@ -1,11 +1,11 @@
 package main
 
 import (
-	"goweb/config"
-	"goweb/database"
-	"goweb/handler"
 	"log"
 	"net/http"
+	"sakura-internet-expt/config"
+	"sakura-internet-expt/database"
+	"sakura-internet-expt/handler"
 )
 
 func main() {

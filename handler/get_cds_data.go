@@ -2,8 +2,8 @@ package handler
 
 import (
 	"database/sql"
-	"goweb/service"
 	"net/http"
+	"sakura-internet-expt/service"
 	"strconv"
 )
 

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"goweb/config"
-	"goweb/database"
 	"log"
+	"sakura-internet-expt/config"
+	"sakura-internet-expt/database"
 )
 
 var query = `

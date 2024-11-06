@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"goweb/entity"
+	"sakura-internet-expt/entity"
 )
 
 var (

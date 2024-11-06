@@ -3,8 +3,8 @@ package database
 import (
 	"database/sql"
 	"github.com/go-sql-driver/mysql"
-	"goweb/config"
 	"log"
+	"sakura-internet-expt/config"
 )
 
 func ConnectDB(cfg *config.Config) *sql.DB {

@@ -1,4 +1,4 @@
-module goweb
+module sakura-internet-expt
 
 go 1.23.2
 
