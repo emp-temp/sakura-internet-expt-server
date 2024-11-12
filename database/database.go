@@ -2,12 +2,15 @@ package database
 
 import (
 	"database/sql"
-	"github.com/go-sql-driver/mysql"
 	"log"
 	"sakura-internet-expt/config"
+	"time"
+
+	"github.com/go-sql-driver/mysql"
 )
 
 func ConnectDB(cfg *config.Config) *sql.DB {
+	l, _ := time.LoadLocation("Asia/Tokyo")
 	c := mysql.Config{
 		DBName:    cfg.DBName,
 		User:      cfg.DBUser,
@@ -15,6 +18,7 @@ func ConnectDB(cfg *config.Config) *sql.DB {
 		Net:       "tcp",
 		Addr:      cfg.DBAddr,
 		ParseTime: true,
+		Loc:       l,
 	}
 	db, err := sql.Open("mysql", c.FormatDSN())
 	if err != nil {
