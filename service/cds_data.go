@@ -1,10 +1,9 @@
 package service
 
 import (
-	"database/sql"
-	"errors"
-	"fmt"
 	"sakura-internet-expt/entity"
+	"sakura-internet-expt/repository"
+	"time"
 )
 
 var (
@@ -12,45 +11,54 @@ var (
 )
 
 type ICdsDataService interface {
-	GetCdsDataList(db *sql.DB, limit, offset int) ([]entity.CdsData, error)
-	SaveCdsData(db *sql.DB, cdsData *entity.CdsData) error
+	IsFrequentUrination() (bool, error)
 }
 
-type CdsDataService struct{}
-
-func NewCdsDataService() ICdsDataService {
-	return &CdsDataService{}
+type CdsDataService struct {
+	CdsDataRepository repository.ICdsDataRepository
 }
 
-func (cds *CdsDataService) GetCdsDataList(db *sql.DB, limit, offset int) ([]entity.CdsData, error) {
-	result := make([]entity.CdsData, 0)
+func NewCdsDataService(repo repository.ICdsDataRepository) ICdsDataService {
+	return &CdsDataService{
+		CdsDataRepository: repo,
+	}
+}
 
-	// `?` プレースホルダーを使い、`limit` と `offset` をパラメータとして渡す
-	rows, err := db.Query("SELECT id, start_time, end_time FROM cds_data LIMIT ? OFFSET ?", limit, offset)
+func (cds *CdsDataService) IsFrequentUrination() (bool, error) {
+	now := time.Now().AddDate(0, 0, 1)
+	// 一日分
+	rd, err := cds.CdsDataRepository.GetDailyCdsDataList(now)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return []entity.CdsData{}, nil
-		}
-		return nil, err
+		return false, err
 	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var c entity.CdsData
-		if err := rows.Scan(&c.ID, &c.StartTime, &c.EndTime); err != nil {
-			return nil, err
-		}
-		result = append(result, c)
-	}
-
-	return result, nil
+	// 一週間分
+	// rw, err := cds.CdsDataRepository.GetWeeklyCdsDataList(now)
+	// if err != nil {
+	// 	return false, err
+	// }
+	// return isDaytimeFrequentUrination(rd) || isNighttimeFrequentUrination(rw), nil
+	return isDaytimeFrequentUrination(rd), nil
 }
 
-func (cds *CdsDataService) SaveCdsData(db *sql.DB, c *entity.CdsData) error {
-	query := fmt.Sprintf("INSERT INTO %s (start_time, end_time) VALUES (?, ?)", table)
-	_, err := db.Exec(query, c.StartTime, c.EndTime)
-	if err != nil {
-		return err
+func isDaytimeFrequentUrination(cdsData []entity.CdsData) bool {
+	daytime := make([]entity.CdsData, 0)
+	for _, v := range cdsData {
+		if v.StartTime.Hour() > 8 || v.StartTime.Hour() < 20 {
+			daytime = append(daytime, v)
+		}
 	}
-	return nil
+	return len(daytime) >= 10
 }
+
+// func isNighttimeFrequentUrination(weeklyCdsData []entity.CdsData) bool {
+// 	var wd map[string][]entity.CdsData
+// 	for _, c := range weeklyCdsData {
+// 		wd[c.StartTime.Weekday().String()] = append(wd[c.StartTime.Weekday().String()], c)
+// 	}
+// 	for _, cdl := range wd {
+// 		count := 0
+// 		for _, cd := range cdl {
+// 			if cd.StartTime.Hour()
+// 		}
+// 	}
+// }

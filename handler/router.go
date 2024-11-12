@@ -3,6 +3,7 @@ package handler
 import (
 	"database/sql"
 	"net/http"
+	"sakura-internet-expt/repository"
 	"sakura-internet-expt/service"
 )
 
@@ -13,9 +14,16 @@ func NewHandler(db *sql.DB) *http.ServeMux {
 		RespondJSON(w, &rsp, http.StatusOK)
 	})
 
-	cs := service.NewCdsDataService()
+	// repository
+	cr := repository.NewCdsDataRepository(db)
+
+	// services
+	cs := service.NewCdsDataService(cr)
+
+	// controllers
 	gcdlc := NewGetCdsDataListController(db, cs)
 	scdc := NewSaveCdsDataController(db, cs)
+
 	r.HandleFunc("/cds/get", gcdlc.ServeHTTP)
 	r.HandleFunc("/cds/post", scdc.ServeHTTP)
 	return r

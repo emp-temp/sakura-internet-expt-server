@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"log"
 	"sakura-internet-expt/config"
 	"sakura-internet-expt/database"
@@ -17,7 +18,12 @@ CREATE TABLE IF NOT EXISTS cds_data (
 func main() {
 	cfg := config.LoadConfig()
 	db := database.ConnectDB(cfg)
-	defer db.Close()
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+			log.Println("failed to close db")
+		}
+	}(db)
 	_, err := db.Exec(query)
 	if err != nil {
 		log.Fatalf("Error migrating: %v", err)
