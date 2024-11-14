@@ -61,7 +61,7 @@ func (cdr *CdsDataRepository) GetCdsDataList(limit, offset int) ([]entity.CdsDat
 func (cdr *CdsDataRepository) GetDailyCdsDataList(date time.Time) ([]entity.CdsData, error) {
 	result := make([]entity.CdsData, 0)
 
-	rows, err := cdr.DB.Query(fmt.Sprintf("SELECT * FROM %s WHERE start_time = CAST(? AS DATE)", table), date)
+	rows, err := cdr.DB.Query(fmt.Sprintf("SELECT * FROM %s WHERE DATE(start_time) = CAST(? AS DATE)", table), date)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return []entity.CdsData{}, nil
