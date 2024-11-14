@@ -1,3 +1,5 @@
+export Env := "dev"
+
 db-up:
     docker compose up db -d
 
@@ -7,5 +9,5 @@ db-down:
 migrate:
     go run cmd/migrate/main.go
 
-server:
+dev:
     go run cmd/web/main.go
