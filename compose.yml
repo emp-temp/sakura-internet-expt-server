@@ -10,3 +10,5 @@ services:
       MYSQL_DATABASE: sakuradb
       MYSQL_USER: sakura
       MYSQL_PASSWORD: sakura-internet
+      TZ: Asia/Tokyo
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_general_ci','--default-time-zone=+09:00']
