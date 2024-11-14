@@ -3,6 +3,7 @@ package handler
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"sakura-internet-expt/entity"
 	"sakura-internet-expt/service"
@@ -28,16 +29,16 @@ func (scdc *SaveCdsDataController) ServeHTTP(w http.ResponseWriter, r *http.Requ
 	}
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 		rsp := &Response{
-			Message: err.Error(),
+			Message: fmt.Errorf("failed to decode json body: %w", err).Error(),
 		}
 		RespondJSON(w, &rsp, http.StatusBadRequest)
 		return
 	}
-	cd := &entity.CdsData{
+	cd := entity.CdsData{
 		StartTime: reqBody.StartTime,
 		EndTime:   reqBody.EndTime,
 	}
-	if err := scdc.Service.SaveCdsData(scdc.DB, cd); err != nil {
+	if err := scdc.Service.SaveCdsData(cd); err != nil {
 		rsp := &Response{
 			Message: err.Error(),
 		}
