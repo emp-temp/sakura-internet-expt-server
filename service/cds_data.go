@@ -6,11 +6,8 @@ import (
 	"time"
 )
 
-var (
-	table = "cds_data"
-)
-
 type ICdsDataService interface {
+	SaveCdsData(cdsData entity.CdsData) error
 	IsFrequentUrination() (bool, error)
 }
 
@@ -24,19 +21,16 @@ func NewCdsDataService(repo repository.ICdsDataRepository) ICdsDataService {
 	}
 }
 
+func (cds *CdsDataService) SaveCdsData(cdsData entity.CdsData) error {
+	return cds.CdsDataRepository.SaveCdsData(cdsData)
+}
+
 func (cds *CdsDataService) IsFrequentUrination() (bool, error) {
-	now := time.Now().AddDate(0, 0, 1)
-	// 一日分
-	rd, err := cds.CdsDataRepository.GetDailyCdsDataList(now)
+	yd := time.Now().AddDate(0, 0, -1)
+	rd, err := cds.CdsDataRepository.GetDailyCdsDataList(yd)
 	if err != nil {
 		return false, err
 	}
-	// 一週間分
-	// rw, err := cds.CdsDataRepository.GetWeeklyCdsDataList(now)
-	// if err != nil {
-	// 	return false, err
-	// }
-	// return isDaytimeFrequentUrination(rd) || isNighttimeFrequentUrination(rw), nil
 	return isDaytimeFrequentUrination(rd), nil
 }
 
@@ -49,16 +43,3 @@ func isDaytimeFrequentUrination(cdsData []entity.CdsData) bool {
 	}
 	return len(daytime) >= 10
 }
-
-// func isNighttimeFrequentUrination(weeklyCdsData []entity.CdsData) bool {
-// 	var wd map[string][]entity.CdsData
-// 	for _, c := range weeklyCdsData {
-// 		wd[c.StartTime.Weekday().String()] = append(wd[c.StartTime.Weekday().String()], c)
-// 	}
-// 	for _, cdl := range wd {
-// 		count := 0
-// 		for _, cd := range cdl {
-// 			if cd.StartTime.Hour()
-// 		}
-// 	}
-// }
