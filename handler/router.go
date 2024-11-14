@@ -21,10 +21,10 @@ func NewHandler(db *sql.DB) *http.ServeMux {
 	cs := service.NewCdsDataService(cr)
 
 	// controllers
-	gcdlc := NewGetCdsDataListController(db, cs)
 	scdc := NewSaveCdsDataController(db, cs)
+	ifuc := NewIsFrequentUrinationController(db, cs)
 
-	r.HandleFunc("/cds/get", gcdlc.ServeHTTP)
-	r.HandleFunc("/cds/post", scdc.ServeHTTP)
+	r.HandleFunc("/cds", scdc.ServeHTTP)
+	r.HandleFunc("/frequent_urination", ifuc.ServeHTTP)
 	return r
 }
